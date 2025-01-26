@@ -11,10 +11,8 @@ class Subject extends Model
 {
     use HasFactory;
 
-    // The table associated with the model (optional if it follows naming convention)
     protected $table = 'subjects';
 
-    // The attributes that are mass assignable.
     protected $fillable = [
         'student_id',
         'subject_name',
