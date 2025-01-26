@@ -2,142 +2,66 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Student;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Subject;
+use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
     public function index()
     {
-        return Student::all();
+        $students = Student::with('subject')->get();
+        return response()->json($students);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string',
+            'email' => 'required|email|unique:students,email',
             'age' => 'required|integer',
-            'email' => 'required|string|email',
+            'subject_name' => 'required|string',
         ]);
 
-        $student = Student::create($request->all());
-        return response()->json($student, 201);
+        $student = Student::create($validated);
+        $subject = Subject::create([
+            'student_id' => $student->id,
+            'subject_name' => $request->subject_name,
+        ]);
+
+        return response()->json(['student' => $student, 'subject' => $subject], 201);
+    }
+
+    public function show($id)
+    {
+        $student = Student::with('subject')->findOrFail($id);
+        return response()->json($student);
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'sometimes|required|string',
-            'age' => 'sometimes|required|integer',
-            'email' => 'sometimes|required|string|email',
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:students,email,' . $id,
+            'age' => 'required|integer',
+            'subject_name' => 'required|string',
         ]);
 
-        try {
-            $student = Student::findOrFail($id);
-            $student->update($request->all());
-            return response()->json($student, 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Student not found'], 404);
-        }
+        $student = Student::findOrFail($id);
+        $student->update($validated);
+
+        $subject = $student->subject;
+        $subject->update(['subject_name' => $request->subject_name]);
+
+        return response()->json(['student' => $student, 'subject' => $subject]);
     }
 
     public function destroy($id)
     {
-        try {
-            $student = Student::findOrFail($id);
-            $student->delete();
-            return response()->json(null, 204);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Student not found'], 404);
-        }
+        $student = Student::findOrFail($id);
+        $student->subject->delete();
+        $student->delete();
+
+        return response()->json(['message' => 'Student and subject deleted successfully.']);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// {
-//     public function index()
-//     {
-//         $students = Student::all();
-//         return view('students.index', compact('students'));
-//     }
-
-//     public function create()
-//     {
-//         return view('students.create');
-//     }
-
-//     public function store(Request $request)
-//     {
-//         $request->validate([
-//             'name' => 'required',
-//             'age' => 'required',
-//             'email' => 'required',
-//         ]);
-
-//         Student::create($request->all());
-
-//         return redirect()->route('students.index')
-//             ->with('success', 'Student created successfully.');
-//     }
-
-//     public function show(Student $student)
-//     {
-//         return view('students.show', compact('student'));
-//     }
-
-//     public function edit(Student $student)
-//     {
-//         return view('students.edit', compact('student'));
-//     }
-
-//     public function update(Request $request, Student $student)
-//     {
-//         $request->validate([
-//             'name' => 'required',
-//             'age' => 'required',
-//             'email' => 'required',
-//         ]);
-
-//         $student->update($request->all());
-
-//         return redirect()->route('students.index')
-//             ->with('success', 'Student updated successfully');
-//     }
-
-//     public function destroy(Student $student)
-//     {
-//         $student->delete();
-
-//         return redirect()->route('students.index')
-//             ->with('success', 'Student deleted successfully');
-//     }
-// }

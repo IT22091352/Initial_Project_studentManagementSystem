@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('age');
             $table->string('email')->unique();
+            $table->integer('age');
+            $table->string('subject_name'); // This field will hold the subject name, but you can reference it in the Subject table
             $table->timestamps();
         });
     }

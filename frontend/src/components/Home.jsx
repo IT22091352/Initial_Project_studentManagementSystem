@@ -12,6 +12,7 @@ function Home() {
     name: "",
     age: "",
     email: "",
+    subject_name: "", // Add subject_name field
   });
   const [selectedStudent, setSelectedStudent] = useState(null);
 
@@ -47,7 +48,7 @@ function Home() {
       console.error("Error adding student:", error);
     } finally {
       setModalOpen(false);
-      setNewStudent({ name: "", age: "", email: "" });
+      setNewStudent({ name: "", age: "", email: "", subject_name: "" }); // Reset subject_name
     }
   };
 
@@ -110,6 +111,7 @@ function Home() {
             <th>Name</th>
             <th>Age</th>
             <th>Email</th>
+            <th>Subject Name</th> {/* Add Subject Name column */}
             <th>Action</th>
           </tr>
         </thead>
@@ -119,6 +121,7 @@ function Home() {
               <td>{student.name}</td>
               <td>{student.age}</td>
               <td>{student.email}</td>
+              <td>{student.subject_name}</td> {/* Display Subject Name */}
               <td>
                 <button
                   className="btn btn-link text-primary"
@@ -200,6 +203,21 @@ function Home() {
                     value={newStudent.email}
                     onChange={(e) =>
                       setNewStudent({ ...newStudent, email: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="studentSubjectName" className="form-label">
+                    Subject Name
+                  </label>
+                  <input
+                    id="studentSubjectName"
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter subject name"
+                    value={newStudent.subject_name}
+                    onChange={(e) =>
+                      setNewStudent({ ...newStudent, subject_name: e.target.value })
                     }
                   />
                 </div>
@@ -298,6 +316,24 @@ function Home() {
                       setSelectedStudent({
                         ...selectedStudent,
                         email: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="editStudentSubjectName" className="form-label">
+                    Subject Name
+                  </label>
+                  <input
+                    id="editStudentSubjectName"
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter subject name"
+                    value={selectedStudent.subject_name}
+                    onChange={(e) =>
+                      setSelectedStudent({
+                        ...selectedStudent,
+                        subject_name: e.target.value,
                       })
                     }
                   />
