@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->integer('age');
-            $table->string('subject_name'); // This field will hold the subject name, but you can reference it in the Subject table
+            $table->string('subject_name'); 
             $table->timestamps();
         });
     }
